@@ -1,0 +1,76 @@
+{% extends 'shop/basic.html' %}
+
+{% block title %}{{product.product_name}} - MyAmazon {% endblock %}
+
+{% block css %}
+
+.btn-primary{
+width: auto;
+}
+
+{% endblock %}
+
+{% block body %}
+<div class="container my-4">
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <img src="/media/{{product.image}}">
+            </div>
+            <div class="row d-flex justify-content-center">
+                <button type="button" class="btn btn-primary mx-2 my-4">Buy Now</button>
+                <button type="button" class="btn btn-primary mx-2 my-4">Add to Cart</button>
+            </div>
+        </div>
+
+        <div class="col-8">
+            <h5>{{product.product_name}}</h5>
+            <p><b>Rs. {{product.price}}</b></p>
+            <p>{{product.desc}}</p>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+{% block js %}
+<script>
+    console.log('working');
+    if(localStorage.getItem('cart') == null){
+        var cart = {};
+    }
+    else{
+        cart = JSON.parse(localStorage.getItem('cart'));
+        document.getElementById('cart').innerHTML = Object.keys(cart).length;
+    }
+
+    function AddToCartFunc(id){
+        console.log("Item Added to the cart");
+        // console.log(id);
+
+        if(cart[id] != undefined){
+            cart[id] = cart[id] + 1;
+        }
+        else{
+            cart[id] = 1;
+        }
+        console.log(cart);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        document.getElementById('cart').innerHTML = Object.keys(cart).length;
+    }
+
+
+document.getElementById('popcart').setAttribute('title', '<h5>All Products of your Cart is Displaying here.</h5>');
+document.getElementById('popcart').setAttribute('data-bs-content', '<h6>All Products of your Cart is Displaying here and you can see.</h6>');
+var popover = new bootstrap.Popover(document.querySelector('#popcart'), {
+  container: 'body'
+})
+
+</script>
+{% endblock %}
+
+
+{% endblock %}

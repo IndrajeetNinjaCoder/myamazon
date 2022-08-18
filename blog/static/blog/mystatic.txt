@@ -1,0 +1,2 @@
+This is my static file in blog.
+My name is indrajeet kumar and i am a programmer.
