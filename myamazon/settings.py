@@ -56,7 +56,7 @@ ROOT_URLCONF = 'myamazon.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['myamazon/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

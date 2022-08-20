@@ -1,9 +1,126 @@
 {% extends 'shop/basic.html' %}
 
-{% block title %}Tracker {% endblock %}
+{% block title %}Checkout - MyAmazon {% endblock %}
 
 {% block body %}
 
-<h1>This is Tracker</h1>
+<div class="container">
+
+
+    <div class="col my-4 mx-5">
+        <h3 class="my-4 mx-4">Enter your order Id and Email address to track your orders</h3>
+        <form method="post" class="row g-3" id="trackerForm"> {% csrf_token %}
+            <div class="col-md-8">
+                <label for="Order_id" class="form-label">Order id</label>
+                <input type="text" class="form-control" id="orderId" name="orderId" placeholder="Order Id">
+            </div>
+            <div class="col-md-8">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email">
+            </div>
+
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Track Order</button>
+            </div>
+        </form>
+
+    </div>
+
+
+    <div class="col my-4 mx-5">
+        <h3 class="my-2">Your order status</h3>
+        <ol class="list-group list-group-numbered" id="items">
+            Enter your order Id and Email and click Track Order to find details about your order!
+        </ol>
+    </div>
+
+    <div class="col my-4 mx-5">
+        <h3 class="my-2">Your order Details</h3>
+        <ol class="list-group list-group-numbered" id="citems">
+            Enter your order Id and Email and click Track Order to find details about your order!
+        </ol>
+    </div>
+
+</div>
+
+
+{% block js %}
+<script>
+
+    $('#trackerForm').submit(function (event) {
+
+        $('#items').empty();
+        var formData = {
+            'orderId': $('input[name=orderId]').val(),
+            'email': $('input[name=email]').val(),
+            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/shop/tracker/',
+            data: formData,
+            encode: true
+        })
+            .done(function (data) {
+                let mystr = "";
+
+                data = JSON.parse(data);;
+                updates = data[0]
+                if (updates.length > 0 && updates != {}) {
+                    for (let i = 0; i < updates.length; i++) {
+                        let text = updates[i]['text'];
+                        let time = updates[i]['time'];
+                        mystr += `<li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    ${text}
+                </div>
+                <span class="badge bg-primary rounded-pill">${time}</span>
+            </li>`;
+                    }
+                    document.getElementById('items').innerHTML = mystr;
+                }
+
+                else {
+                    document.getElementById('items').innerHTML = `<li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto"><b>Sorry,</b> We are not able to fetch this order id and email. Make sure to type correct order Id and email`;
+                }
+                cart = JSON.parse(data[1]);
+                // console.log(cart);
+                let cartStr = "";
+                for (item in cart) {
+                    let name = cart[item][1];
+                    let qty = cart[item][0];
+                    cartStr += `<li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">${name}</div>
+                                <span class="badge bg-primary rounded-pill">${qty}</span>
+                            </li>`;
+                }
+                document.getElementById('citems').innerHTML = cartStr;
+
+            });
+
+        event.preventDefault();
+    })
+
+
+    /*
+   document.getElementById('trackerForm').addEventListener('submit', (event)=>{
+    e.preventDefault();
+    orderId = document.getElementById('orderId');
+    email = document.getElementById('email');
+    csrfmiddlewaretoken = document.getElementsByName('csrfmiddlewaretoken')[0];
+    console.log("Form Submited");
+    var formData = {
+        'orderId': orderId.value,
+        'email': email.value,
+        'csrfmiddlewaretoken': csrfmiddlewaretoken.value
+    }
+    console.log(formData);
+   })
+   */
+</script>
+{% endblock %}
 
 {% endblock %}
