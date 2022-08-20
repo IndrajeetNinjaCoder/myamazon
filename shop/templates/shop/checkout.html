@@ -12,7 +12,8 @@
 
         </ol>
         <div class="container rounded p-3 my-2" style="background-color: #d9d3d3">
-            Your Cart total is <b>Rs. <span id="totalPrice"></span></b>. Enter Your details below and place your order. Thanks for using MyAmazon
+            Your Cart total is <b>Rs. <span id="totalPrice"></span></b>. Enter Your details below and place your order.
+            Thanks for using MyAmazon
         </div>
 
 
@@ -24,6 +25,7 @@
         <h3 class="my-2">Step 1 - Enter Address and other Details </h3>
         <form action="/shop/checkout/" method="post" class="row g-3"> {% csrf_token %}
             <input type="hidden" name="itemsJson" id="itemsJson">
+            <input type="hidden" name="amount" id="amount">
             <div class="col-md-6">
                 <label for="name" class="form-label">Name</label>
                 <input type="text" class="form-control" id="name" name="name" placeholder="Name">
@@ -74,7 +76,6 @@
 <script>
     if (localStorage.getItem('cart') == null) {
         var cart = {};
-
     }
     else {
         cart = JSON.parse(localStorage.getItem('cart'));
@@ -113,6 +114,7 @@
     document.location = "/shop";
     {% endif %}
 
+    document.getElementById('amount').value = document.getElementById('totalPrice').innerHTML
 
 </script>
 {% endblock %}

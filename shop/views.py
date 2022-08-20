@@ -1,6 +1,8 @@
 from cmath import e
 from math import ceil
 from tkinter import E
+from winreg import QueryInfoKey
+from xml.sax.handler import all_properties
 from django.http import HttpResponse
 from django.shortcuts import render
 from .models import Product, Contact, Order, OrderUpdate
@@ -8,20 +10,7 @@ import json
 
 # Create your views here.
 def index(request):
-    # products = Product.objects.all()
-    # print(products)
-    # n = len(products)
-    # nSlides = n // 4 + ceil((n / 4) - (n // 4))
-    # params = {'no_of_slides': nSlides, 'range': range(1, nSlides), 'product': products}
-    # return render(request, 'shop/index.html', params)
-
-    # products = Product.objects.all()
-    # n = len(products)
-    # nSlides = n // 4 + ceil((n / 4) - (n // 4))
-    # allProds = [[products, range(1, len(products)), nSlides], [products, range(1, len(products)), nSlides]]
-    # params = {'allProds': allProds}
-    # return render(request, "shop/index.html", params)
-
+   
     allProds = []
     catprods = Product.objects.values('category', 'id')
     cats = {item['category'] for item in catprods}
@@ -33,6 +22,41 @@ def index(request):
 
     params = {'allProds': allProds}
     return render(request, 'shop/index.html', params)
+
+def searchMatch(query, item):
+    # return true only if query matches the item
+    query = query.lower()
+    queryWords = query.split()
+    for word in queryWords:
+        if word in item.desc.lower() or word in item.product_name.lower() or word in item.category.lower() or word == str(item.price):
+            return True  
+    return False
+
+def search(request):
+    query = request.GET.get('search')
+    # allProds = []
+    # catprods = Product.objects.values('category', 'id')
+    # cats = {item['category'] for item in catprods}
+    # for cat in cats:
+    #     prodtemp = Product.objects.filter(category=cat)
+    #     prod = [item for item in prodtemp if searchMatch(query, item)]
+
+    #     n = len(prod)
+    #     nSlides = n // 4 + ceil((n / 4) - (n // 4))
+        # if len(prod) != 0:
+        #     allProds.append([prod, range(1, nSlides), nSlides])
+
+
+
+    allProds = Product.objects.all()
+    for product in allProds:
+        # print(f"{prod.product_name} \t{prod.price}")
+        prod = [item for item in allProds if searchMatch(query, item)]
+
+    params = {'products': prod, "msg": "", 'query':query}
+    if len(prod) == 0 or len(query)<3:
+        params = {'msg': "Please make sure to enter relevant search query"}
+    return render(request, 'shop/search.html', params)
 
 
 def about(request):
@@ -75,8 +99,6 @@ def tracker(request):
     return render(request, 'shop/tracker.html')
 
 
-def search(request):
-    return render(request, 'shop/search.html')
 
 
 def productView(request, myid):
@@ -90,6 +112,7 @@ def checkout(request):
     if request.method == 'POST':
         items_json = request.POST.get('itemsJson', '')
         name = request.POST.get('name', '')
+        amount = request.POST.get('amount', '')
         email = request.POST.get('email', '')
         address = request.POST.get('address1', '') + " " + request.POST.get('address2', '')
         city = request.POST.get('city', '')
@@ -98,7 +121,7 @@ def checkout(request):
         phone = request.POST.get('phone', '')
        
 
-        order = Order(items_json=items_json, name=name, email=email, address=address, city=city, state=state, zip_code=zip_code, phone=phone)
+        order = Order(items_json=items_json, amount=amount, name=name, email=email, address=address, city=city, state=state, zip_code=zip_code, phone=phone)
         order.save()
 
         update = OrderUpdate(order_id=order.order_id, update_desc="The order has been placed")
