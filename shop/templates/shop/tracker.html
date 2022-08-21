@@ -65,39 +65,43 @@
         })
             .done(function (data) {
                 let mystr = "";
-
-                data = JSON.parse(data);;
-                updates = data[0]
-                if (updates.length > 0 && updates != {}) {
-                    for (let i = 0; i < updates.length; i++) {
+                // console.log(data);
+                data = JSON.parse(data);
+                if (data['status'] == 'success') {
+                    updates = data['updates']
+                    for (i = 0; i < updates.length; i++) {
                         let text = updates[i]['text'];
                         let time = updates[i]['time'];
                         mystr += `<li class="list-group-item d-flex justify-content-between align-items-start">
-                <div class="ms-2 me-auto">
-                    ${text}
-                </div>
-                <span class="badge bg-primary rounded-pill">${time}</span>
-            </li>`;
+                                <div class="ms-2 me-auto">${text}</div>
+                                <span class="badge bg-primary rounded-pill">${time}</span>
+                            </li>`;
                     }
                     document.getElementById('items').innerHTML = mystr;
-                }
 
-                else {
-                    document.getElementById('items').innerHTML = `<li class="list-group-item d-flex justify-content-between align-items-start">
-                <div class="ms-2 me-auto"><b>Sorry,</b> We are not able to fetch this order id and email. Make sure to type correct order Id and email`;
-                }
-                cart = JSON.parse(data[1]);
-                // console.log(cart);
-                let cartStr = "";
-                for (item in cart) {
-                    let name = cart[item][1];
-                    let qty = cart[item][0];
-                    cartStr += `<li class="list-group-item d-flex justify-content-between align-items-start">
+                    // Fill in the order details
+                    cart = JSON.parse(data['itemsJson']);
+                    // console.log(cart);
+                    let cartStr = "";
+                    for (item in cart) {
+                        let name = cart[item][1];
+                        let qty = cart[item][0];
+                        cartStr += `<li class="list-group-item d-flex justify-content-between align-items-start">
                                 <div class="ms-2 me-auto">${name}</div>
                                 <span class="badge bg-primary rounded-pill">${qty}</span>
                             </li>`;
+                    }
+                    document.getElementById('citems').innerHTML = cartStr;
+
+                } else {
+                    // console.log("else running ****************");
+                    let mstr = `<span><b>Sorry,</b> We are not able to fetch this order id and email. Make sure to type correct order Id and email</span>`;
+
+
+                    document.getElementById('items').innerHTML = mstr;
+                    document.getElementById('citems').innerHTML = mstr;
                 }
-                document.getElementById('citems').innerHTML = cartStr;
+
 
             });
 

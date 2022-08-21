@@ -97,8 +97,10 @@
             mystr += `<li class="list-group-item d-flex justify-content-between align-items-start">
                 <div class="ms-2 me-auto">
                     ${name}
-                </div>
-                <span class="badge bg-primary rounded-pill">${qty}</span>
+                    </div>
+                <span class="badge bg-primary rounded-pill">Rs. ${itemPrice}</span>&nbsp; &nbsp;
+                <span class="badge bg-primary rounded-pill">Qty: ${qty}</span>&nbsp; &nbsp;
+                <span class="badge bg-primary rounded-pill">Total Rs. ${itemPrice*qty}</span>
             </li>`;
         }
         document.getElementById('items').innerHTML = mystr;
